@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Producto";
+}
+
+<a class="nav-link btn btn-primary w-25" asp-area="" asp-controller="Producto" asp-action="Mantenimiento">Agregar Producto</a>
+
+@model List<CAPA.DOMAIN.DTOs.Producto.ProductoDto>
+
+<h1>PRODUCTO</h1>
+
+@if (ViewBag.error != null)
+{
+    <span class="text-danger">@ViewBag.error</span>
+}
+
+@if (Model.Any())
+{
+    <table class="table w-100 table-bordered table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Acciones</th>
+                <th>Nombre Producto</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Fecha Creación</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (CAPA.DOMAIN.DTOs.Producto.ProductoDto item in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Mantenimiento" asp-route-id="@item.Id" asp-route-opc="Editar" class="btn btn-primary">Editar</a>
+                        <a asp-action="Eliminar" asp-route-id="@item.Id" asp-route-opc="Delete" class="btn btn-danger">Eliminar</a>
+                    </td>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripcion</td>
+                    <td>@item.CategoriaName</td>
+                    <td>@item.Precio</td>
+                    <td>@item.Stock</td>
+                    <td>@item.FechaCreacion.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay registros que mostrar</p>
+}
+

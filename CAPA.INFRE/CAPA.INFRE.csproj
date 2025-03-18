@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Contexto\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CAPA.APP\CAPA.APP.csproj" />
+    <ProjectReference Include="..\CAPA.INFRE.EF\CAPA.INFRE.EF.csproj" />
+  </ItemGroup>
+
+</Project>

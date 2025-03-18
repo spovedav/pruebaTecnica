@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>NUGET.TOOL.CORE._3_1</RootNamespace>
+    <PackageId>Capa.Nuget.Tool</PackageId>
+    <Version>1.2.0</Version>
+    <Authors>marcelo.poveda</Authors>
+    <Company>MiEmpresa S.A</Company>
+    <Description>Paquete nuget para utilis para la empresa MiEmpresa S.A</Description>
+    <PackageTags>Aes</PackageTags>
+  </PropertyGroup>
+
+</Project>

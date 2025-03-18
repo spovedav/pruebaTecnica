@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Transacción";
+}
+
+@model List<CAPA.DOMAIN.DTOs.Transaccion.TransaccionDto>
+
+<h1>TRANSACCIÓN</h1>
+
+@if (ViewBag.error != null)
+{
+    <span class="text-danger">@ViewBag.error</span>
+}
+
+
+@if (Model.Any())
+{
+
+    <table class="table w-100 table-bordered table-hover table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Detalle</th>
+                <th>Fecha</th>
+                <th>Tipo Transacción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (CAPA.DOMAIN.DTOs.Transaccion.TransaccionDto item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Detalle</td>
+                    <td>@item.Fecha.ToShortDateString()</td>
+                    <td>@item.Tipo</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.PrecioUnitario</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay registros que mostrar</p>
+}
+

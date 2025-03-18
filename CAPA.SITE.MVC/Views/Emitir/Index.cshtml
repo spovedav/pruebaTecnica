@@ -1,0 +1,155 @@
+﻿@model CAPA.DOMAIN.DTOs.Emisor.EmisorDto
+
+@{
+    ViewData["Title"] = "Detalles del Emisor";
+    var productosDisponibles = (List<CAPA.DOMAIN.DTOs.Emisor.EmisorDetalleDto>)ViewBag.productos;
+}
+
+@if (ViewBag.error != null)
+{
+    <span class="text-danger">@ViewBag.error</span>
+}
+
+@if (ViewBag.Estado != null)
+{
+    string Estado = (ViewBag.Estado == 2) ? "AUTORIZADO" : "DEVUELTO";
+
+    <h5>@Estado</h5>
+    <span class="text-primary">@ViewBag.Mensaje</span>
+}
+
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg" style="width: 70%;">
+        <h2 class="text-center">Detalles del Emisor</h2>
+
+        <form method="post" asp-controller="Emitir" asp-action="Index">
+            <div class="mb-3">
+                <label class="form-label"><strong>Emisor:</strong></label>
+                <input type="text" class="form-control" asp-for="Emisor" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Cliente:</strong></label>
+                <input type="text" class="form-control" asp-for="Cliente" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Seleccionar Producto:</strong></label>
+                <select id="selectProducto" class="form-select">
+                    <option value="">-- Selecciona un producto --</option>
+                    @foreach (var producto in productosDisponibles)
+                    {
+                        <option value="@producto.IdProducto" data-nombre="@producto.Nombre" data-detalle="@producto.Detalle" data-precio="@producto.Precio">
+                            @producto.Nombre - @producto.Detalle (@producto.Precio.ToString("C"))
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <h3 class="mt-4">Productos Seleccionados</h3>
+            <table class="table table-bordered text-center" id="tablaProductos">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Detalle</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyProductos">
+                    @* @{
+                        foreach (var item in Model.Detalle)
+                        {
+                            <input type="hidden" asp-for="Detalle[0].Precio" value="@item.Nombre" />        
+                        }
+                    } *@
+                    <!-- Aquí se agregarán los productos dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="text-end">
+                <h4>Total General: <span id="totalGeneral">0.00</span></h4>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success mt-3">Emitir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectProducto = document.getElementById("selectProducto");
+        const tbodyProductos = document.getElementById("tbodyProductos");
+        const totalGeneral = document.getElementById("totalGeneral");
+
+        selectProducto.addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const id = selectedOption.value;
+            const nombre = selectedOption.getAttribute("data-nombre");
+            const detalle = selectedOption.getAttribute("data-detalle");
+            const precio = parseFloat(selectedOption.getAttribute("data-precio"));
+
+            if (!id) return; // Si no se selecciona nada, salir
+
+            var filas = document.querySelectorAll('table tbody tr');
+            var count = ((filas.length || 0));
+
+            // Verificar si el producto ya está agregado
+            if (document.getElementById(`producto-${id}`)) {
+                alert("Este producto ya fue agregado.");
+                return;
+            }
+
+            // Crear una nueva fila
+            const newRow = document.createElement("tr");
+            newRow.setAttribute("id", `producto-${id}`);
+            newRow.innerHTML = `
+                <td>${id} <input type="hidden" name="Detalle[${count}].IdProducto" value="${id}" /></td>
+                <td>${nombre} <input type="hidden" name="Detalle[${count}].Nombre" value="${nombre}" /></td>
+                <td>${detalle} <input type="hidden" name="Detalle[${count}].Detalle" value="${detalle}" /></td>
+                <td><input type="number" class="form-control cantidad" value="1" min="1" name="Detalle[${count}].Cantidad" style="width: 80px;"></td>
+                <td>${precio.toFixed(2)} <input type="hidden" name="Detalle[${count}].Precio" value="${precio}" /></td>
+                <td class="total">${precio.toFixed(2)} <input type="hidden" name="Detalle[${count}].Total" value="${precio}" /></td>
+                <td><button class="btn btn-danger btn-sm eliminar">❌</button></td>
+            `;
+
+            // Agregar fila a la tabla
+            tbodyProductos.appendChild(newRow);
+            actualizarTotal();
+
+            // Resetear el select
+            selectProducto.selectedIndex = 0;
+
+            // Agregar eventos a los nuevos elementos
+            newRow.querySelector(".cantidad").addEventListener("input", actualizarFila);
+            newRow.querySelector(".eliminar").addEventListener("click", function () {
+                newRow.remove();
+                actualizarTotal();
+            });
+        });
+
+        function actualizarFila(event) {
+            const fila = event.target.closest("tr");
+            const cantidad = parseInt(event.target.value) || 1;
+            const precio = parseFloat(fila.children[4].textContent);
+            const total = cantidad * precio;
+
+            fila.children[5].textContent = total.toFixed(2);
+            actualizarTotal();
+        }
+
+        function actualizarTotal() {
+            let total = 0;
+            document.querySelectorAll("#tbodyProductos tr").forEach(fila => {
+                total += parseFloat(fila.children[5].textContent);
+            });
+            totalGeneral.textContent = total.toFixed(2);
+        }
+    });
+</script>
